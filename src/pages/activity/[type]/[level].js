@@ -76,6 +76,10 @@ async function fetchContentFromAI(category, levelFromUrl, mode) {
   };
 
   const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || ""; 
+  
+
+  console.log(`Menggunakan model: 2.5 flash dengan API Key: ${apiKey ? 'Ada' : 'Tidak Ada (atau kosong)'}`);
+
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
   try {
@@ -87,7 +91,7 @@ async function fetchContentFromAI(category, levelFromUrl, mode) {
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: { message: "Gagal mengambil detail error dari API" }}));
         console.error("API Error Response:", errorData);
-        throw new Error(`Permintaan API gagal dengan status ${response.status}: ${errorData.error?.message || 'Error tidak diketahui dari API.'}`);
+        throw new Error(`Permintaan API untuk model '${modelName}' gagal dengan status ${response.status}: ${errorData.error?.message || 'Error tidak diketahui dari API.'}`);
     }
     const result = await response.json();
 
@@ -111,6 +115,7 @@ async function fetchContentFromAI(category, levelFromUrl, mode) {
     throw error; 
   }
 }
+
 
 export default function ActivityPage() {
   const router = useRouter();
@@ -209,12 +214,14 @@ export default function ActivityPage() {
                 <div key={index} className="p-4 bg-slate-700 rounded-lg shadow">
                   <h3 className="text-xl font-bold text-sky-400">{item.word}</h3>
                   <p className="text-slate-300"><strong className="text-slate-100">Arti:</strong> {item.meaning}</p>
-                  <p className="text-slate-300"><strong className="text-slate-100">Contoh:</strong> "{item.example}"</p>
+                  {/* PERBAIKAN ESLINT DI SINI */}
+                  <p className="text-slate-300">
+                    <strong className="text-slate-100">Contoh:</strong> &quot;{item.example}&quot;
+                  </p>
                 </div>
               ))}
             </div>
           )}
-
           {currentMode === 'exercises' && (
             <div className="space-y-6">
               <h2 className="text-2xl font-semibold text-teal-300 mb-4">Latihan Soal:</h2>
